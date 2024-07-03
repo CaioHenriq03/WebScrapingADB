@@ -1,0 +1,184 @@
+Metadata-Version: 2.1
+Name: a-pandas-ex-apply-ignore-exceptions
+Version: 0.10
+Summary: Use DataFrame.apply / Series.apply with a default value for Exceptions
+Home-page: https://github.com/hansalemaos/a_pandas_ex_apply_ignore_exceptions
+Author: Johannes Fischer
+Author-email: <aulasparticularesdealemaosp@gmail.com>
+License: MIT
+Keywords: DataFrame,Series,apply,Exception
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Topic :: Scientific/Engineering :: Visualization
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Text Editors :: Text Processing
+Classifier: Topic :: Text Processing :: General
+Classifier: Topic :: Text Processing :: Indexing
+Classifier: Topic :: Text Processing :: Filters
+Classifier: Topic :: Utilities
+Description-Content-Type: text/markdown
+License-File: LICENSE.rst
+Requires-Dist: pandas
+Requires-Dist: useful-functions-easier-life
+
+
+# Use DataFrame.apply / Series.apply with a default value for Exceptions 
+
+
+
+```python
+
+pip install a-pandas-ex-apply-ignore-exceptions
+
+```
+
+
+
+```python
+
+
+
+from a_pandas_ex_apply_ignore_exceptions import pd_add_apply_ignore_exceptions
+
+import pandas as pd
+
+pd_add_apply_ignore_exceptions()
+
+df = pd.read_csv(
+
+    "https://raw.githubusercontent.com/pandas-dev/pandas/main/doc/data/titanic.csv"
+
+)
+
+
+
+# the Exception value is the first arg, the rest is just like apply
+
+df1 = df.PassengerId.ds_apply_ignore(pd.NA, lambda x: x / 3)
+
+df2 = df.ds_apply_ignore(pd.NA, lambda x: x["PassengerId"] / 3, axis=1)
+
+df3 = df.PassengerId.ds_apply_ignore(pd.NA, lambda x: x / 0)
+
+df4 = df.ds_apply_ignore(pd.NA, lambda x: x["PassengerId"] / 0, axis=1)
+
+print(df1)
+
+print(df2)
+
+print(df3)
+
+print(df4)
+
+
+
+
+
+r"""
+
+0        0.333333
+
+1        0.666667
+
+2        1.000000
+
+3        1.333333
+
+4        1.666667
+
+          ...    
+
+886    295.666667
+
+887    296.000000
+
+888    296.333333
+
+889    296.666667
+
+890    297.000000
+
+Name: PassengerId, Length: 891, dtype: float64
+
+0        0.333333
+
+1        0.666667
+
+2        1.000000
+
+3        1.333333
+
+4        1.666667
+
+          ...    
+
+886    295.666667
+
+887    296.000000
+
+888    296.333333
+
+889    296.666667
+
+890    297.000000
+
+Length: 891, dtype: float64
+
+0      <NA>
+
+1      <NA>
+
+2      <NA>
+
+3      <NA>
+
+4      <NA>
+
+       ... 
+
+886    <NA>
+
+887    <NA>
+
+888    <NA>
+
+889    <NA>
+
+890    <NA>
+
+Name: PassengerId, Length: 891, dtype: object
+
+0      <NA>
+
+1      <NA>
+
+2      <NA>
+
+3      <NA>
+
+4      <NA>
+
+       ... 
+
+886    <NA>
+
+887    <NA>
+
+888    <NA>
+
+889    <NA>
+
+890    <NA>
+
+Length: 891, dtype: object
+
+
+
+"""
+
+
+
+		
+
+```

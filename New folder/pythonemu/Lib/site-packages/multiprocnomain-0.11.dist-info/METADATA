@@ -1,0 +1,117 @@
+Metadata-Version: 2.1
+Name: multiprocnomain
+Version: 0.11
+Summary: multiprocessing without __main__ 
+Home-page: https://github.com/hansalemaos/multiprocnomain
+Author: Johannes Fischer
+Author-email: aulasparticularesdealemaosp@gmail.com
+License: MIT
+Keywords: multiprocessing,cpus
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Utilities
+Description-Content-Type: text/markdown
+License-File: LICENSE.rst
+Requires-Dist: dill
+
+
+# multiprocessing without __main__ 
+
+## pip install multiprocnomain
+
+
+## Advantages:
+
+- Allows easy parallelization of functions without the need for execution in the '__\_\_main\_\___' block or at the top level.
+- Facilitates the parallel execution of functions with different input parameters, providing flexibility.
+- Improves performance by leveraging multiprocessing, especially for computationally intensive tasks.
+- Automatically aggregates results into a dictionary, simplifying result mapping to input indices.
+- Customizable parameters (processes and chunks) to adapt to specific requirements and hardware capabilities.
+- Suitable for various use cases, including data science, machine learning, image processing, and scientific computing.
+
+```python
+
+Parameters:
+	- fu (callable): The function to be executed in parallel.
+	- it (iterable): An iterable of dictionaries, each containing the input parameters for the function.
+	- processes (int): The number of processes to use (default is 3).
+	- chunks (int): The chunk size for multiprocessing.Pool.starmap (default is 1).
+
+Returns:
+	dict: A dictionary containing the results of the parallel executions, where keys correspond to the indices
+		of the input iterable and values contain the corresponding function outputs.
+
+Examples:
+	import random
+	from multiprocnomain import start_multiprocessing
+	import subprocess
+	from a_cv_imwrite_imread_plus import open_image_in_cv
+	import numpy as np
+
+
+	def somefu(q=100):
+		exec(f"import random", globals())  # necessary
+		y = random.randint(10, 20)
+		for x in range(q):
+			y = y + x
+
+		return y
+
+
+	# somefu=lambda r:1111
+	it = [{"q": 100}, {"q": 100}, {"q": 100}, {"q": 10}]
+	b2 = start_multiprocessing(fu=somefu, it=it, processes=3, chunks=1)
+	print(b2)
+
+
+	def somefu2(path):
+		exec(f"import subprocess", globals()) # necessary
+		y = subprocess.run([f"ls" ,f"{path}"],capture_output=True)
+		return y
+
+	allpath=[{'path':'c:\\windows'}, {'path':'c:\\cygwin'}]
+	b1 = start_multiprocessing(fu=somefu2, it=allpath, processes=3, chunks=1)
+	print(b1)
+	def somefu3(q):
+		exec(f"from a_cv_imwrite_imread_plus import open_image_in_cv", globals()) # necessary
+		exec(f"import numpy as np", globals()) # necessary
+
+		im = open_image_in_cv(q)
+		r = im[..., 2]
+		g = im[..., 1]
+		b = im[..., 0]
+		return np.where((r == 255) & (g == 255) & (b == 255))
+
+
+	allimages = [
+		{"q": r"C:\Users\hansc\Pictures\collage_2023_04_23_06_04_51_956747.png"},
+		{"q": r"C:\Users\hansc\Pictures\bw_clickabutton.png"},
+		{"q": r"C:\Users\hansc\Pictures\cgea.png"},
+		{"q": r"C:\Users\hansc\Pictures\checkboxes.png"},
+		{"q": r"C:\Users\hansc\Pictures\clickabutton.png"},
+		{"q": r"C:\Users\hansc\Pictures\collage_2023_04_23_05_24_31_797203.png"},
+		{"q": r"C:\Users\hansc\Pictures\collage_2023_04_23_05_25_48_657510.png"},
+		{"q": r"C:\Users\hansc\Pictures\collage_2023_04_23_05_26_16_431863.png"},
+		{"q": r"C:\Users\hansc\Pictures\collage_2023_04_23_05_27_07_483808.png"},
+		{"q": r"C:\Users\hansc\Pictures\collage_2023_04_23_05_27_41_985343.png"},
+		{"q": r"C:\Users\hansc\Pictures\collage_2023_04_23_05_28_16_529438.png"},
+		{"q": r"C:\Users\hansc\Pictures\collage_2023_04_23_05_28_55_105250.png"},
+		{"q": r"C:\Users\hansc\Pictures\collage_2023_04_23_05_29_11_492492.png"},
+		{"q": r"C:\Users\hansc\Pictures\collage_2023_04_23_05_38_13_226848.png"},
+		{"q": r"C:\Users\hansc\Pictures\collage_2023_04_23_06_04_14_676085.png"},
+		{'q':r"C:\Users\hansc\Downloads\IMG-20230618-WA0000.jpeg"},
+		{'q':r"C:\Users\hansc\Downloads\maxresdefault.jpg"},
+		{'q':r"C:\Users\hansc\Downloads\panda-with-broom-600x500 (1).jpg"},
+		{'q':r"C:\Users\hansc\Downloads\panda-with-broom-600x500.jpg"},
+		{'q':r"C:\Users\hansc\Downloads\panda-with-broom-600x500222222222.jpg"},
+		{'q':r"C:\Users\hansc\Downloads\pexels-alex-andrews-2295744.jpg"},
+		{'q':r"C:\Users\hansc\Downloads\pexels-niki-nagy-1128416.jpg"},
+
+	]
+	b = start_multiprocessing(fu=somefu3, it=allimages, processes=3, chunks=5)
+	print(b)
+
+
+```

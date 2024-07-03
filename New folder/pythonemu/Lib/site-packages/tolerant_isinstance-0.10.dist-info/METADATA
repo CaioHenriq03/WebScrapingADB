@@ -1,0 +1,49 @@
+Metadata-Version: 2.1
+Name: tolerant-isinstance
+Version: 0.10
+Summary: isinstance - more tolerant
+Home-page: https://github.com/hansalemaos/tolerant_isinstance
+Author: Johannes Fischer
+Author-email: <aulasparticularesdealemaosp@gmail.com>
+License: MIT
+Keywords: isinstance,None,pd.NA
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Topic :: Scientific/Engineering :: Visualization
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Text Editors :: Text Processing
+Classifier: Topic :: Text Processing :: General
+Classifier: Topic :: Text Processing :: Indexing
+Classifier: Topic :: Text Processing :: Filters
+Classifier: Topic :: Utilities
+Description-Content-Type: text/markdown
+License-File: LICENSE.rst
+Requires-Dist: isiter
+
+
+# isinstance - more tolerant 
+
+```python
+# Tested with:
+# Python 3.9.13
+# Windows 10
+
+This function checks: 
+isinstance(__object, modul)
+type(__object).__module__ == getattr(modul, "__name__")
+str(type(__object)) == str(type(modul))
+
+
+p = pd.NA
+isinstance(p, pd.NA) # Exception
+isinstance_tolerant(p, pd.NA) # no Exception
+p = None
+isinstance(p, None) # Exception
+isinstance_tolerant(p, None)  # no Exception
+
+
+```
+
+
+

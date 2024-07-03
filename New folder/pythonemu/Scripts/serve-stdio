@@ -1,0 +1,82 @@
+#!C:\ProgramData\anaconda3\envs\pythonemu\python.exe
+
+from __future__ import print_function
+
+import os, sys
+import signal
+import nclib
+
+argiter = iter(sys.argv)
+progname = next(argiter)
+daemonize = False
+show_stderr = None
+bind_addr = '0.0.0.0'
+
+def usage():
+    print('Usage: %s [options] port command ...' % sys.argv[0])
+    print('Options:')
+    print('  -d       Daemonize, run in background')
+    print('  -e       Redirect program\'s stderr to socket')
+    print('  -E       Hide program\'s stderr')
+    print('  -b addr  Bind to a specific address')
+    sys.exit(1)
+
+for arg in argiter:
+    try:
+        if arg == '-d':
+            daemonize = True
+        elif arg == '-e':
+            show_stderr = True
+        elif arg == '-E':
+            show_stderr = False
+        elif arg == '-b':
+            bind_addr = next(argiter)
+        else:
+            break
+    except StopIteration:
+        usage()
+else:
+    usage()
+
+try:
+    port = int(arg) # pylint: disable=undefined-loop-variable
+except (ValueError, NameError):
+    usage()
+
+def quote(s):
+    return "'%s'" % s.replace("'", "'\"'\"'")
+
+command = ' '.join(map(quote, argiter))
+if command == '':
+    usage()
+
+if daemonize:
+    p = os.fork()
+    if p:
+        print(p)
+        sys.stdout.flush()
+        os._exit(0)
+
+children = []
+def reap():
+    i = 0
+    while i < len(children):
+        if children[i].poll() is not None:
+            children.pop(i)
+        else:
+            i += 1
+
+def cleanup(*args): # pylint: disable=unused-argument
+    for child in children:
+        child.kill() # not sure how effective this is, will probably only kill the shell...
+    print()
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, cleanup)
+signal.signal(signal.SIGINT, cleanup)
+
+for client in nclib.TCPServer((bind_addr, port)):
+    print('Accepted client %s:%d' % client.peer)
+    children.append(nclib.Process.launch(command, client, stderr=show_stderr))
+    client.close()
+    reap()
